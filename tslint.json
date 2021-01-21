@@ -42,8 +42,9 @@
     "max-classes-per-file": false,
     "max-line-length": [
       true,
-      140
+      250
     ],
+    "ordered-imports": false,
     "member-ordering": [
       true,
       {
@@ -72,6 +73,7 @@
     "no-redundant-jsdoc": true,
     "no-switch-case-fall-through": true,
     "no-var-requires": false,
+    "object-literal-sort-keys": false,
     "object-literal-key-quotes": [
       true,
       "as-needed"
@@ -94,6 +96,7 @@
         "named": "never"
       }
     },
+    "trailing-comma": [false, {"multiline": "always", "singleline": "never"}],
     "typedef": [
       true,
       "call-signature"

@@ -1,21 +1,22 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { LineChartModule } from '../components/line1.module';
+import { LineTransitoin1Module } from './pages/linetransition1/linetransition1.module';
 import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    LineChartModule
+    LineTransitoin1Module,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [
+      AppComponent,
+  ]
 })
 export class AppModule { }

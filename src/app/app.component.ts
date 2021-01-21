@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'd3-js-for-angular';
+  // title = 'd3-js-for-angular';
 }

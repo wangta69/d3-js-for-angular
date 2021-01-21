@@ -12,11 +12,11 @@ export interface ChartData {
 
 @Component({
     selector: 'app-chart',
-    template: `<div class='d3-chart' #chart></div>`,
+    template: `<div class='d3-chart' #chart style='width: 1000px; height: 1000px;'></div>`,
     styleUrls: [],
     encapsulation: ViewEncapsulation.None
 })
-export class LineChartComponent implements OnInit {
+export class LineTransitonComponent implements OnInit {
     @ViewChild('chart', {static: true}) private chartContainer: ElementRef;
     private svg: any;
     private element: any;
@@ -31,8 +31,8 @@ export class LineChartComponent implements OnInit {
     // 데이타용 변수
     private lineArr = [];
     private MAX_LENGTH = 100;
-//    private duration = 500;
-    //    var chart = realTimeLineChart();
+    private duration = 500;
+    //   var chart = realTimeLineChart();
 
     // 데이타용 변수 끝
 
@@ -46,46 +46,48 @@ export class LineChartComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-    //    this.init();
-        this.createData();
-        this.element = this.chartContainer.nativeElement;
-        this.svg = d3.select(this.element).append('svg');
+        this.init();
+        this.seedData();
+        // this.createData();
 
-        const body = this.svg.append('g');
-        const gEnter = this.svg.selectAll(); // data([data]).enter().append('svg').append('g');
-        body.append('g').attr('class', 'axis x');
-        body.append('g').attr('class', 'axis y');
-        body.append('defs').append('clipPath')
-            .attr('id', 'clip')
-          .append('rect')
-            .attr('width', this.width - this.margin.left - this.margin.right)
-            .attr('height', this.height - this.margin.top - this.margin.bottom);
-
-        body.append('g')
-            .attr('class', 'lines')
-            .attr('clip-path', 'url(#clip)')
-    //      .selectAll('.data').data(data).enter()
-            .append('path')
-            .attr('class', 'data');
-
-        const legendEnter = body.append('g')
-          .attr('class', 'legend')
-          .attr('transform', 'translate(' + (this.width - this.margin.right - this.margin.left - 75) + ', 25)');
-        legendEnter.append('rect')
-          .attr('width', 50)
-          .attr('height', 75)
-          .attr('fill', '#ffffff')
-          .attr('fill-opacity', 0.7);
+    //     this.element = this.chartContainer.nativeElement;
+    //     svg = d3.select(this.element).append('svg');
+    //
+    //     const body = svg.append('g');
+    //     const gEnter = svg.selectAll(); // data([data]).enter().append('svg').append('g');
+    //     body.append('g').attr('class', 'axis x');
+    //     body.append('g').attr('class', 'axis y');
+    //     body.append('defs').append('clipPath')
+    //         .attr('id', 'clip')
+    //       .append('rect')
+    //         .attr('width', this.width - this.margin.left - this.margin.right)
+    //         .attr('height', this.height - this.margin.top - this.margin.bottom);
+    //
+    //     body.append('g')
+    //         .attr('class', 'lines')
+    //         .attr('clip-path', 'url(#clip)')
+    // //      .selectAll('.data').data(data).enter()
+    //         .append('path')
+    //         .attr('class', 'data');
+    //
+    //     const legendEnter = body.append('g')
+    //       .attr('class', 'legend')
+    //       .attr('transform', 'translate(' + (this.width - this.margin.right - this.margin.left - 75) + ', 25)');
+    //     legendEnter.append('rect')
+    //       .attr('width', 50)
+    //       .attr('height', 75)
+    //       .attr('fill', '#ffffff')
+    //       .attr('fill-opacity', 0.7);
     }
 
 
     // 임시 데이타 만들기 시작
-    private createData(): void  {
-        this.seedData();
-        setInterval(() => {
-            this.updateData();
-        }, 500);
-    }
+    // private createData(): void  {
+    //     this.seedData();
+    //     // setInterval(() => {
+    //     //     this.updateData();
+    //     // }, 500);
+    // }
 
     private randomNumberBounds(min: number, max: number): void {
       return Math.floor(Math.random() * max) + min;
@@ -96,9 +98,7 @@ export class LineChartComponent implements OnInit {
       for (let i = 0; i < this.MAX_LENGTH; ++i) {
         this.lineArr.push({
           time: new Date(now.getTime() - ((this.MAX_LENGTH - i) * this.duration)),
-          x: this.randomNumberBounds(0, 5),
-          y: this.randomNumberBounds(0, 2.5),
-          z: this.randomNumberBounds(0, 10),
+          close: this.randomNumberBounds(0, 5)
         });
       }
     }
@@ -108,9 +108,7 @@ export class LineChartComponent implements OnInit {
 
       const lineData = {
         time: now,
-        x: this.randomNumberBounds(0, 5),
-        y: this.randomNumberBounds(0, 2.5),
-        z: this.randomNumberBounds(0, 10),
+        close: this.randomNumberBounds(0, 5)
       };
       this.lineArr.push(lineData);
 
@@ -118,7 +116,7 @@ export class LineChartComponent implements OnInit {
         this.lineArr.shift();
       }
 
-      this.draw();
+    //  this.draw();
 
     //  d3.select('#chart').datum(lineArr).call(chart);
     }
@@ -133,8 +131,30 @@ export class LineChartComponent implements OnInit {
 
     // 임시 데이타 만들기 끝
 
+
+    private init(): void {
+        const flag = this.chartContainer.nativeElement.offsetHeight;
+        if (flag && this.lineArr) {
+            // this.element = this.chartContainer.nativeElement;
+            // 갯수를 맞추어야 애니메이션 효과가 발생함
+            this.draw();
+        } else {
+            //  참이 아닐 경우 0.1초후 다시 초기화를 진행한다..
+            setTimeout(() => {
+                this.init();
+            }, 100);
+        }
+
+    }
     // 차트 그리기
     private draw(): void {
+
+        const margin = {top: 20, right: 20, bottom: 20, left: 20};
+         const width = 600;
+         const height = 400;
+         const duration = 500;
+         const color = d3.schemeCategory10;
+
         const data = ['x', 'y', 'z'].map((c) => {
                 return {
                   label: c,
@@ -144,7 +164,7 @@ export class LineChartComponent implements OnInit {
                 };
               });
 
-    //    console.log(data);
+        console.log(data);
         const t = d3.transition().duration(this.duration).ease(d3.easeLinear);
         const x = d3.scaleTime().rangeRound([0, this.width - this.margin.left - this.margin.right]);
         const y = d3.scaleLinear().rangeRound([this.height - this.margin.top - this.margin.bottom, 0]);
@@ -164,11 +184,40 @@ export class LineChartComponent implements OnInit {
             .curve(d3.curveBasis)
             .x((d) => x(d.time))
             .y((d) => y(d.value));
+
+        const element = this.chartContainer.nativeElement;
+        const tmp = d3.select(element).append('svg');
+        const svg = d3.select(element).selectAll('svg').data([data]);
+
+        console.log(svg);
+
+        const gEnter = svg.enter().append("svg").append("g");
+
+        console.log(gEnter);
+      gEnter.append("g").attr("class", "axis x");
+      gEnter.append("g").attr("class", "axis y");
+      gEnter.append("defs").append("clipPath")
+          .attr("id", "clip")
+        .append("rect")
+          .attr("width", width-margin.left-margin.right)
+          .attr("height", height-margin.top-margin.bottom);
+      gEnter.append("g")
+          .attr("class", "lines")
+          .attr("clip-path", "url(#clip)")
+        .selectAll(".data").data(data).enter()
+          .append("path")
+            .attr("class", "data");
+
+      //   var svg = d3.select(this).selectAll("svg").data([data]);
+      // var gEnter = svg.enter().append("svg").append("g");
+
+    //    console.log(element);
+    //    console.log(svg);
     //
-    //   var svg = d3.select(this).selectAll('svg').data([data]);
+       //  var svg = d3.select(this).selectAll('svg').data([data]);
         // const svg = d3.select(this.element).append('svg').data([data]);
 
-        const legendEnter = this.svg.select('.legend');
+        const legendEnter = svg.select('.legend');
         legendEnter.selectAll('text')
             .data(data).enter()
             .append('text')
@@ -177,11 +226,11 @@ export class LineChartComponent implements OnInit {
             .attr('fill', (d) => z(d.label));
 
     //   var svg = selection.select('svg');
-        this.svg.attr('width', this.width).attr('height', this.height);
-        const g = this.svg.select('g')
+        svg.attr('width', this.width).attr('height', this.height);
+        const g = svg.select('g')
             .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
 
-        this.svg.select('g.axis.x')
+        svg.select('g.axis.x')
             .attr('transform', 'translate(0,' + (this.height - this.margin.bottom - this.margin.top) + ')')
             .transition(t)
             .call(d3.axisBottom(x).ticks(5));
